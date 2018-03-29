@@ -17,9 +17,7 @@ def home():
     else:
         ip_client = jsonify({'ip': request.remote_addr}), 200
         result = request.form
-        # return result
-        return render_template('welcome.html', ip_client = request.remote_addr)
-        # return ip_client
+        return render_template('welcome.html', ip_client = request.remote_addr, result = result)
  
 @app.route('/login', methods=['POST'])
 def do_admin_login():
