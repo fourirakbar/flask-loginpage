@@ -1,3 +1,4 @@
+import redis
 from flask import Flask
 from flask import Flask, flash, redirect, render_template, request, session, abort
 from flask import request
@@ -44,16 +45,25 @@ def do_admin_login():
     result = query.first()
     print "sebelum if"
     if result:
-        session['logged_in'] = True
-        ip_client = POST_USERNAME + "|" + request.remote_addr
-        # ip_client = jsonify({'ip': request.remote_addr}), 200
-        print "masuk"
-        res = requests.post('http://10.151.36.38:5000/tests/endpoint', headers={'content-type': 'application/json'}, json=ip_client)
+        r = redis.StrictRedis(host='localhost', port=6379, db=0)
 
-        # dictToSend = {'question':'what is the answer?'}
-        # res = requests.post('10.151.36.38:5000/test/endpoint', json=dictToSend)
-        # print 'response from server: ', res.text
-        # ductFromServer = res.json()
+        check_nrp = r.get(POST_USERNAME)
+
+        if check_nrp:
+            print "NRP sudah digunakan"
+        else:
+            r.set(POST_USERNAME, request.remote_addr)
+    
+            session['logged_in'] = True
+            ip_client = POST_USERNAME + "|" + request.remote_addr
+            # ip_client = jsonify({'ip': request.remote_addr}), 200
+            print "masuk"
+            res = requests.post('http://10.151.36.38:5000/tests/endpoint', headers={'content-type': 'application/json'}, json=ip_client)
+
+            # dictToSend = {'question':'what is the answer?'}
+            # res = requests.post('10.151.36.38:5000/test/endpoint', json=dictToSend)
+            # print 'response from server: ', res.text
+            # ductFromServer = res.json()
 
     else:
         flash('wrong password!')
