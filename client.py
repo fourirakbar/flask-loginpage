@@ -3,8 +3,17 @@ import docker
 app = Flask(__name__)
 
 @app.route('/')
-def home():
-    print "masuk home"
+def create_container():
+    print "Start create container using docker"
+
+    file = open("data.txt", "r")
+    result = file.read()
+    # print "Isi file data.txt: "+result
+
+    name_container = result.split("|")[0]
+    print "Name container: "+name_container
+
+    client = docker.from_env()
 
 @app.route('/tests/endpoint', methods=['POST'])
 def my_test_endpoint():
@@ -17,10 +26,10 @@ def my_test_endpoint():
     print 'NRP:', input_json.split("|")[0]
     print 'YOUR IP:', input_json.split("|")[1]
 
-    with open("nrp.txt", "wb") as fo:
+    with open("data.txt", "wb") as fo:
         fo.write(str(input_json))
 
-    return home()
+    return create_container()
 
     return "sukses"
 
