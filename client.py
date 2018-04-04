@@ -4,7 +4,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def create_container():
-    print "Start create container using docker"
+    print "Start create container"
 
     file = open("data.txt", "r")
     result = file.read()
@@ -13,7 +13,8 @@ def create_container():
     name_container = result.split("|")[0]
     print "Name container: "+name_container
 
-    client = docker.from_env()
+    # client = docker.from_env()
+    # client.containers.run()
 
 @app.route('/tests/endpoint', methods=['POST'])
 def my_test_endpoint():
@@ -29,7 +30,7 @@ def my_test_endpoint():
     with open("data.txt", "wb") as fo:
         fo.write(str(input_json))
 
-    return create_container()
+    
 
     return "sukses"
 
