@@ -1,4 +1,5 @@
 import redis
+import MySQLdb
 from flask import Flask
 from flask import Flask, flash, redirect, render_template, request, session, abort
 from flask import request
@@ -14,7 +15,10 @@ engine = create_engine('sqlite:///loginits.db', echo=True)
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app)
- 
+db = MySQLdb.connect("10.151.36.38","taoing","fourir96akbar","coba")
+cursor = db.cursor()
+
+
 @app.route('/')
 def home():
     if not session.get('logged_in'):
@@ -37,7 +41,8 @@ def do_admin_login():
     print "fungsi 1"
     POST_USERNAME = str(request.form['username'])
     POST_PASSWORD = str(request.form['password'])
- 
+    POST_IP = str(request.remote_addr)
+    
     Session = sessionmaker(bind=engine)
     s = Session()
     print "====="
@@ -45,20 +50,57 @@ def do_admin_login():
     result = query.first()
     print "sebelum if"
     if result:
-        r = redis.StrictRedis(host='localhost', port=6379, db=0)
+        print "masuk if"
+        sql = "SELECT * FROM testing WHERE nrp = '%s'" % POST_USERNAME
+        print sql
+        try:
+            cursor.execute(sql)
+            results = cursor.fetchall()
 
-        check_nrp = r.get(POST_USERNAME)
+            print results
+            print "-----"
+            if results:
+                print "NRP sudah digunakan"
+                for row in results:
+                    print "Masuk for"
+                    print row[2]
+                    # id = row[0]
+                    # nrp = row[1]
+                    # ip = row[2]
 
-        if check_nrp:
-            print "NRP sudah digunakan"
-        else:
-            r.set(POST_USERNAME, request.remote_addr)
+                    # print "id=%s,nrp=%s,ip=%d" % (id, nrp, ip )
+            else:
+                sql_insert = """INSERT INTO testing(nrp, ip) VALUES ('%s', '%s')""" % (POST_USERNAME, POST_IP)
+                try:
+                    cursor.execute(sql_insert)
+                    db.commit()
+                except:
+                    db.rollback()
+                db.close()
+                print "done insert"
+
+                session['logged_in'] = True
+                ip_client = POST_USERNAME + "|" + request.remote_addr
+                # ip_client = jsonify({'ip': request.remote_addr}), 200
+                print "masuk"
+                res = requests.post('http://10.151.36.38:5000/tests/endpoint', headers={'content-type': 'application/json'}, json=ip_client)
+            
+        except:
+            print "Error: unable to fetch data"
+
+        
+        print "done boi"
+        # r = redis.StrictRedis(host='10.151.36.38', port=6379, db=0)
+
+        # check_nrp = r.get(POST_USERNAME)
+
+        # if check_nrp:
+            # print "NRP sudah digunakan: "+check_nrp
+        # else:
+            # print "NRP belum digunakan"
+            # r.set(POST_USERNAME, request.remote_addr)
     
-            session['logged_in'] = True
-            ip_client = POST_USERNAME + "|" + request.remote_addr
-            # ip_client = jsonify({'ip': request.remote_addr}), 200
-            print "masuk"
-            res = requests.post('http://10.151.36.38:5000/tests/endpoint', headers={'content-type': 'application/json'}, json=ip_client)
+            
 
             # dictToSend = {'question':'what is the answer?'}
             # res = requests.post('10.151.36.38:5000/test/endpoint', json=dictToSend)
