@@ -54,6 +54,7 @@ def do_admin_login():
         sql = "SELECT * FROM testing WHERE nrp = '%s'" % POST_USERNAME
         print sql
         try:
+            print "masuk try"
             cursor.execute(sql)
             results = cursor.fetchall()
 

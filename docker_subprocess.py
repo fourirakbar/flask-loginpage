@@ -79,7 +79,7 @@ class DockerHelper:
         self.niceLogger.log(debugcommand)
 
         popen = subprocess.Popen(command, stdin=PIPE, stdout=PIPE, stderr=PIPE)
-        popen.wait(500) # wait a little for docker to complete
+        popen.wait() # wait a little for docker to complete
 
         return popen
 
