@@ -80,7 +80,11 @@ class DockerHelper:
         return popen
 
 
-getIP = "10.151.36.21"
+readfile = open("data.txt", "r")
+split = readfile.read().split("|")
+
+getNRP = split[0]
+getIP = split[1]
 
 config = {
     "NetworkName": "None",
@@ -91,7 +95,7 @@ containerImages = {
 }
 
 containerNames = {
-    "Squid": "IP_" + getIP,
+    "Squid": getNRP + "_" + getIP,
 }
 
 niceLogger = NiceLogger()
