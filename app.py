@@ -97,9 +97,9 @@ def do_admin_login():
             session['logged_in'] = True
             ip_client = POST_USERNAME + "|" + request.remote_addr
             
-            print "masuk"
+            print "masuk: "+ip_client
             res = requests.post('http://10.151.36.38:5000/tests/endpoint', headers={'content-type': 'application/json'}, json=ip_client)
-            
+            print res
             print "done boi"
 
     else:
