@@ -80,11 +80,15 @@ class DockerHelper:
         return popen
 
 
-readfile = open("data.txt", "r")
-split = readfile.read().split("|")
+readdata = open("data.txt", "r")
+boi = readdata.read().split("|")
+getNRP = boi[0]
+getIP = boi[1]
+getPORT = boi[2]
 
-getNRP = split[0]
-getIP = split[1]
+#getNRP = "5114100115"
+#getIP = "10.151.36.38"
+#getPORT = "9001"
 
 config = {
     "NetworkName": "None",
@@ -108,4 +112,9 @@ niceLogger.log("Creating {0} network.".format(config["NetworkName"]))
 dockerHelper.create_network()
 
 niceLogger.log("Adding SecretProject2.")
-dockerHelper.run_container(containerNames["Squid"], containerImages['Squid'], ["-p", "9002:3128"])
+
+name_dir = '/home/fourirakbar/container-data/'+getNRP+'_'+getIP+'_'+getPORT
+p = subprocess.Popen('mkdir '+name_dir+'', shell=True)
+p.wait()
+
+dockerHelper.run_container(containerNames["Squid"], containerImages['Squid'], ["-p", getPORT+":3128", "-v", name_dir+":/var/log/squid3/"])

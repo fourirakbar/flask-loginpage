@@ -39,7 +39,7 @@ def my_test_endpoint():
     getNRP = input_json.split("|")[0] 
     getIP = input_json.split("|")[1]        
 
-    
+    subprocess.call(["python", "docker_oing.py"])
 
     return "sukses"
 
