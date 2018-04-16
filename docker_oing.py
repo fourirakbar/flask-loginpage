@@ -91,7 +91,7 @@ getPORT = boi[2]
 #getPORT = "9001"
 
 config = {
-    "NetworkName": "None",
+    "NetworkName": "host",
 }
 
 containerImages = {
