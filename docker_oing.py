@@ -117,4 +117,4 @@ name_dir = '/home/fourirakbar/container-data/'+getNRP+'_'+getIP+'_'+getPORT
 p = subprocess.Popen('mkdir '+name_dir+'', shell=True)
 p.wait()
 
-dockerHelper.run_container(containerNames["Squid"], containerImages['Squid'], ["-p", getPORT+":3128", "-v", name_dir+":/var/log/squid3/"])
+dockerHelper.run_container(containerNames["Squid"], containerImages['Squid'], ["-v", name_dir+":/var/log/squid3/"])
