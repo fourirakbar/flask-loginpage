@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, url_for, jsonify
 import docker
 import subprocess
+import os
 from subprocess import PIPE
 from datetime import datetime
 app = Flask(__name__)
@@ -8,6 +9,20 @@ print "boi"
 @app.route('/tests/endpoint', methods=['POST'])
 def my_test_endpoint():
     print "masuk fungsi"
+
+    input_json = request.get_json(force=True) 
+
+    iptables1 = 'iptables -D FORWARD -s '+input_json.split("|")[1]+' -m state --state NEW,RELATED,ESTABLISHED -j ACCEPT'
+    iptables2 = 'iptables -D FORWARD -s '+input_json.split("|")[1]+' -p tcp -d 10.151.36.130 --dport 4000 -j ACCEPT'
+    iptables3 = 'iptables -t nat -D PREROUTING -p tcp -s '+input_json.split("|")[1]+' --dport 80 -j DNAT --to 10.151.36.130:4000'
+    iptables4 = 'iptables -t nat -D POSTROUTING -s '+input_json.split("|")[1]+' -p tcp -d 10.151.36.130 --dport 4000 -j MASQUERADE'
+
+    os.system(iptables1)
+    os.system(iptables2)
+    os.system(iptables3)
+    os.system(iptables4)
+
+    print "done delete rules iptables"
 
     readdata = open("data.txt", "r")
     boi = readdata.read().split("|")
@@ -22,7 +37,7 @@ def my_test_endpoint():
         print "This is old port: "+str(old_port)
     
     print "This is def port: "+str(def_port)
-    input_json = request.get_json(force=True) 
+    # input_json = request.get_json(force=True) 
     print request
     print "==="
     # force=True, above, is necessary if another developer 

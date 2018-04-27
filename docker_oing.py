@@ -1,6 +1,10 @@
 import subprocess
+import mysql.connector
 from subprocess import PIPE
 from datetime import datetime
+
+db = mysql.connector.connect(user='taoing', password='fourir96akbar', host='10.151.36.38', database='ta_container')
+cursor = db.cursor(buffered=True)
 
 class NiceLogger:
     def log(self, message):
@@ -80,11 +84,17 @@ class DockerHelper:
         return popen
 
 
+flag_container=1
+
 readdata = open("data.txt", "r")
 boi = readdata.read().split("|")
 getNRP = boi[0]
 getIP = boi[1]
 getPORT = boi[2]
+
+sql_insert = """INSERT INTO container(name_container, flag) VALUES ('%s', '%s')""" % (getIP, flag_container)
+cursor.execute(sql_insert)
+db.commit()
 
 #getNRP = "5114100115"
 #getIP = "10.151.36.38"

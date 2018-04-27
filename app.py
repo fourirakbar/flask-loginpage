@@ -27,17 +27,13 @@ def home():
     if not session.get('logged_in'):
         return render_template('login.html')
     else:
-        # ip_client = jsonify({'ip': request.remote_addr}), 200
-        # dictToSend = {'question':json=dictToSend'what is the answer?'}
-        
-        # print 'response from server: ', res.text
-        # dictFromServer = res.json()
         result = request.form
-        # ip_client = request.remote_addr
-        # ip_client = {'ip': 'request.remote_addr'}
-        # res = requests.post('http://10.151.36.38:5000/test/endpoint', data=ip_client)
-        # return res.text
         return render_template('welcome.html', ip_client = request.remote_addr, result = result)
+
+@app.route('/hello')
+def hello():
+    return redirect("/", code=302)
+
  
 @app.route('/login', methods=['POST'])
 def do_admin_login():
