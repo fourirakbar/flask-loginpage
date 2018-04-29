@@ -3,7 +3,7 @@ import mysql.connector
 from subprocess import PIPE
 from datetime import datetime
 
-db = mysql.connector.connect(user='taoing', password='fourir96akbar', host='10.151.36.38', database='ta_container')
+db = mysql.connector.connect(user='taoing', password='fourir96akbar', host='10.151.36.134', database='ta_container')
 cursor = db.cursor(buffered=True)
 
 class NiceLogger:
@@ -91,6 +91,8 @@ boi = readdata.read().split("|")
 getNRP = boi[0]
 getIP = boi[1]
 getPORT = boi[2]
+getPORT2 = int(boi[2])+1
+getPORT3 = int(boi[2])+2
 
 sql_insert = """INSERT INTO container(name_container, flag) VALUES ('%s', '%s')""" % (getIP, flag_container)
 cursor.execute(sql_insert)

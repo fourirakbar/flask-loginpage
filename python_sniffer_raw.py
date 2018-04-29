@@ -89,8 +89,7 @@ while True:
             print "xxxxx"
             if flag == 1 and sourceIP == "10.151.36.70":
                 print "flag = 1 bosku: "+sourceIP
-                # string_iptables = 'iptables -t nat -A PREROUTING -i wlp3s0 -s '+sourceIP+' -p tcp --dport 80 -j REDIRECT --to-ports 4000'
-                # string_iptables = 'iptables -t nat -A PREROUTING -i wlp3s0 -s '+sourceIP+' -p tcp --dport 80 -j REDIRECT --to-destination 10.151.36.130:4000/hello'
+                
 
                 iptables1 = 'iptables -A FORWARD -s '+sourceIP+' -m state --state NEW,RELATED,ESTABLISHED -j ACCEPT'
                 iptables2 = 'iptables -A FORWARD -s '+sourceIP+' -p tcp -d 10.151.36.130 --dport 4000 -j ACCEPT'

@@ -30,10 +30,10 @@ def my_test_endpoint():
     print len(boi)
 
     if len(boi) == 1:
-        def_port = 9001    
+        def_port = 3128
     else:
         old_port = boi[2]
-        def_port = int(old_port) + 1
+        def_port = int(old_port) + 3
         print "This is old port: "+str(old_port)
     
     print "This is def port: "+str(def_port)
