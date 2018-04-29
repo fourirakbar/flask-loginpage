@@ -31,41 +31,21 @@ def my_test_endpoint():
     os.system(iptables4)
 
     print "done delete rules iptables"
+    #update di tabel iptables_login, set status sudah berhasil login = true
     query = "UPDATE iptables_login SET flag_iptables_login = 1 WHERE ip_iptables_login = '%s'" % (input_json.split("|")[1])
     cursor.execute(query)
     db.commit()
 
-    readdata = open("data.txt", "r")
-    boi = readdata.read().split("|")
-    print boi[2]
-    print len(boi)
-
-    if len(boi) == 1:
-        def_port = 3128
-    else:
-        old_port = boi[2]
-        def_port = int(old_port) + 3
-        print "This is old port: "+str(old_port)
-    
-    print "This is def port: "+str(def_port)
-    # input_json = request.get_json(force=True) 
-    print request
-    print "==="
-    # force=True, above, is necessary if another developer 
-    # forgot to set the MIME type to 'application/json'
     print 'NRP:', input_json.split("|")[0]
     print 'YOUR IP:', input_json.split("|")[1]
-    print 'YOUR PORT:', str(def_port)
+    
 
-    writenew = str(input_json) + "|" + str(def_port)
+    writenew = str(input_json)
 
     with open("data.txt", "wb") as fo:
-        fo.write(str(writenew))
+        fo.write(str(writenew))      
 
-    getNRP = input_json.split("|")[0] 
-    getIP = input_json.split("|")[1]        
-
-    # subprocess.call(["python", "docker_oing.py"])
+    subprocess.call(["python", "docker_oing.py"])
 
     return "sukses"
 

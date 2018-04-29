@@ -62,8 +62,9 @@ while True:
             print query2
             cursor2.execute(query2)
             hasil2 = cursor2.fetchall()
+            print hasil2
 
-            if hasil2 and sourceIP == "10.151.36.70":
+            if hasil2:
                 #jika sudah diarahkan ke halaman login. dicek ip tersebut sudah login / belum
                 str_hasil2 = str(hasil2)
                 print str_hasil2.split("(")[1].split(",")
@@ -74,7 +75,7 @@ while True:
                 elif str_hasil2.split("(")[1].split(",")[0] == "1":
                     print "ip tersebut sudah berhasil login"
 
-            elif sourceIP == "10.151.36.70":
+            else:
 
                 print "Mulai diarahkan ke halaman login. IP SRC: "+sourceIP+" dan IP DST: "+destinationIP
 
