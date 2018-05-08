@@ -16,28 +16,24 @@ engine = create_engine('sqlite:///loginits.db', echo=True)
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app)
-db = mysql.connector.connect(user='taoing', password='fourir96akbar', host='10.151.36.38', database='coba')
+db = mysql.connector.connect(user='taoing', password='fourir96akbar', host='10.151.36.134', database='ta_container')
 cursor = db.cursor(buffered=True)
 cursor2 = db.cursor(buffered=True)
 cursor3 = db.cursor(buffered=True)
 
 
-@app.route('/')
+@app.route('/', methods=['GET'])
+def hello():
+    return redirect("http://10.151.36.130:4000/login", code=302)
+
+@app.route('/login', methods=['GET'])
 def home():
     if not session.get('logged_in'):
         return render_template('login.html')
     else:
-        # ip_client = jsonify({'ip': request.remote_addr}), 200
-        # dictToSend = {'question':json=dictToSend'what is the answer?'}
-        
-        # print 'response from server: ', res.text
-        # dictFromServer = res.json()
         result = request.form
-        # ip_client = request.remote_addr
-        # ip_client = {'ip': 'request.remote_addr'}
-        # res = requests.post('http://10.151.36.38:5000/test/endpoint', data=ip_client)
-        # return res.text
         return render_template('welcome.html', ip_client = request.remote_addr, result = result)
+
  
 @app.route('/login', methods=['POST'])
 def do_admin_login():
@@ -50,7 +46,7 @@ def do_admin_login():
     s = Session()
     print "====="
     # query = s.query(User).filter(User.username.in_([POST_USERNAME]), User.password.in_([POST_PASSWORD]) )
-    query = "SELECT * FROM database_nrp WHERE nrp = '%s' AND password = '%s'" % (POST_USERNAME, POST_PASSWORD)
+    query = "SELECT * FROM nrp_mahasiswa WHERE nrp = '%s' AND password = '%s'" % (POST_USERNAME, POST_PASSWORD)
     print "This is query: "+query
     cursor.execute(query)
     print "Done execute query"
@@ -97,8 +93,9 @@ def do_admin_login():
             session['logged_in'] = True
             ip_client = POST_USERNAME + "|" + request.remote_addr
             
-            print "masuk"
-            res = requests.post('http://10.151.36.38:5000/tests/endpoint', headers={'content-type': 'application/json'}, json=ip_client)
+            print "masuk: "+ip_client
+            
+            res = requests.post('http://10.151.36.134:5000/tests/endpoint', headers={'content-type': 'application/json'}, json=ip_client)
             
             print "done boi"
 
