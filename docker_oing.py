@@ -42,7 +42,7 @@ class DockerHelper:
         self.niceLogger.log(" - Pulled " + containerImage)
 
     def run_container(self, containerName, containerImage, args):
-        command = ["docker", "run", "-d", "--net", config["NetworkName"], "--name", containerName]
+        command = ["docker", "run", "-dit", "--net", config["NetworkName"], "--name", containerName]
         command.extend(args)
         command.append(containerImage)
 
@@ -91,27 +91,21 @@ boi = readdata.read().split("|")
 getNRP = boi[0]
 getIP = boi[1]
 getPORT = boi[2]
-getPORT2 = int(boi[2])+1
-getPORT3 = int(boi[2])+2
 
-sql_insert = """INSERT INTO container(name_container, flag) VALUES ('%s', '%s')""" % (getIP, flag_container)
-cursor.execute(sql_insert)
-db.commit()
-
-#getNRP = "5114100115"
-#getIP = "10.151.36.38"
-#getPORT = "9001"
+# sql_insert = """INSERT INTO container(name_container, flag) VALUES ('%s', '%s')""" % (getIP, flag_container)
+# cursor.execute(sql_insert)
+# db.commit()
 
 config = {
     "NetworkName": "host",
 }
 
 containerImages = {
-    "Squid": "sameersbn/squid:latest"
+    "mitmproxy": "fourirakbar/mitmproxy-oing:version2"
 }
 
 containerNames = {
-    "Squid": getNRP + "_" + getIP,
+    "mitmproxy": getIP,
 }
 
 niceLogger = NiceLogger()
@@ -125,8 +119,8 @@ dockerHelper.create_network()
 
 niceLogger.log("Adding SecretProject2.")
 
-name_dir = '/home/fourirakbar/container-data/'+getNRP+'_'+getIP+'_'+getPORT
+name_dir = '/home/fourirakbar/container-data/'+getIP+'_'+getNRP+'_'+getPORT
 p = subprocess.Popen('mkdir '+name_dir+'', shell=True)
 p.wait()
 
-dockerHelper.run_container(containerNames["Squid"], containerImages['Squid'], ["-v", name_dir+":/var/log/squid3/"])
+dockerHelper.run_container(containerNames["mitmproxy"], containerImages['mitmproxy'], ["-v", name_dir+":/root"], ["--privileged"])
