@@ -1,6 +1,10 @@
 import subprocess
+import mysql.connector
 from subprocess import PIPE
 from datetime import datetime
+
+db = mysql.connector.connect(user='taoing', password='fourir96akbar', host='10.151.36.134', database='ta_container')
+cursor = db.cursor(buffered=True)
 
 class NiceLogger:
     def log(self, message):
@@ -38,7 +42,7 @@ class DockerHelper:
         self.niceLogger.log(" - Pulled " + containerImage)
 
     def run_container(self, containerName, containerImage, args):
-        command = ["docker", "run", "-d", "--net", config["NetworkName"], "--name", containerName]
+        command = ["docker", "run", "-dit", "--net", config["NetworkName"], "--name", containerName]
         command.extend(args)
         command.append(containerImage)
 
@@ -80,22 +84,28 @@ class DockerHelper:
         return popen
 
 
-readfile = open("data.txt", "r")
-split = readfile.read().split("|")
+flag_container=1
 
-getNRP = split[0]
-getIP = split[1]
+readdata = open("data.txt", "r")
+boi = readdata.read().split("|")
+getNRP = boi[0]
+getIP = boi[1]
+getPORT = boi[2]
+
+# sql_insert = """INSERT INTO container(name_container, flag) VALUES ('%s', '%s')""" % (getIP, flag_container)
+# cursor.execute(sql_insert)
+# db.commit()
 
 config = {
-    "NetworkName": "None",
+    "NetworkName": "host",
 }
 
 containerImages = {
-    "Squid": "sameersbn/squid:latest"
+    "mitmproxy": "fourirakbar/mitmproxy-oing:version2"
 }
 
 containerNames = {
-    "Squid": getNRP + "_" + getIP,
+    "mitmproxy": getIP,
 }
 
 niceLogger = NiceLogger()
@@ -108,4 +118,9 @@ niceLogger.log("Creating {0} network.".format(config["NetworkName"]))
 dockerHelper.create_network()
 
 niceLogger.log("Adding SecretProject2.")
-dockerHelper.run_container(containerNames["Squid"], containerImages['Squid'], ["-p", "9002:3128"])
+
+name_dir = '/home/fourirakbar/container-data/'+getIP+'_'+getNRP+'_'+getPORT
+p = subprocess.Popen('mkdir '+name_dir+'', shell=True)
+p.wait()
+
+dockerHelper.run_container(containerNames["mitmproxy"], containerImages['mitmproxy'], ["-v", name_dir+":/root"], ["--privileged"])

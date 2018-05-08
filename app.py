@@ -34,6 +34,13 @@ def home():
         result = request.form
         return render_template('welcome.html', ip_client = request.remote_addr, result = result)
 
+#<<<<<<< HEAD
+#=======
+#@app.route('/hello')
+#def hello():
+#    return redirect("/", code=302)
+#
+#>>>>>>> b99e4512f25ba9f07af4f2840b9f115ca407627f
  
 @app.route('/login', methods=['POST'])
 def do_admin_login():
@@ -93,8 +100,7 @@ def do_admin_login():
             session['logged_in'] = True
             ip_client = POST_USERNAME + "|" + request.remote_addr
             
-            print "masuk: "+ip_client
-            
+            print "masuk: "+ip_client      
             res = requests.post('http://10.151.36.134:5000/tests/endpoint', headers={'content-type': 'application/json'}, json=ip_client)
             
             print "done boi"
