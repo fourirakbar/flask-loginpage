@@ -16,13 +16,17 @@ engine = create_engine('sqlite:///loginits.db', echo=True)
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app)
-db = mysql.connector.connect(user='taoing', password='fourir96akbar', host='10.151.36.38', database='coba')
+db = mysql.connector.connect(user='taoing', password='fourir96akbar', host='10.151.36.134', database='ta_container')
 cursor = db.cursor(buffered=True)
 cursor2 = db.cursor(buffered=True)
 cursor3 = db.cursor(buffered=True)
 
 
-@app.route('/')
+@app.route('/', methods=['GET'])
+def hello():
+    return redirect("http://10.151.36.130:4000/login", code=302)
+
+@app.route('/login', methods=['GET'])
 def home():
     if not session.get('logged_in'):
         return render_template('login.html')
@@ -30,10 +34,13 @@ def home():
         result = request.form
         return render_template('welcome.html', ip_client = request.remote_addr, result = result)
 
-@app.route('/hello')
-def hello():
-    return redirect("/", code=302)
-
+#<<<<<<< HEAD
+#=======
+#@app.route('/hello')
+#def hello():
+#    return redirect("/", code=302)
+#
+#>>>>>>> b99e4512f25ba9f07af4f2840b9f115ca407627f
  
 @app.route('/login', methods=['POST'])
 def do_admin_login():
@@ -46,7 +53,7 @@ def do_admin_login():
     s = Session()
     print "====="
     # query = s.query(User).filter(User.username.in_([POST_USERNAME]), User.password.in_([POST_PASSWORD]) )
-    query = "SELECT * FROM database_nrp WHERE nrp = '%s' AND password = '%s'" % (POST_USERNAME, POST_PASSWORD)
+    query = "SELECT * FROM nrp_mahasiswa WHERE nrp = '%s' AND password = '%s'" % (POST_USERNAME, POST_PASSWORD)
     print "This is query: "+query
     cursor.execute(query)
     print "Done execute query"
@@ -93,9 +100,9 @@ def do_admin_login():
             session['logged_in'] = True
             ip_client = POST_USERNAME + "|" + request.remote_addr
             
-            print "masuk: "+ip_client
-            res = requests.post('http://10.151.36.38:5000/tests/endpoint', headers={'content-type': 'application/json'}, json=ip_client)
-            print res
+            print "masuk: "+ip_client      
+            res = requests.post('http://10.151.36.134:5000/tests/endpoint', headers={'content-type': 'application/json'}, json=ip_client)
+            
             print "done boi"
 
     else:
