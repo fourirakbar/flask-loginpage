@@ -1,9 +1,11 @@
+import os
+import time
 import subprocess
 import mysql.connector
 from subprocess import PIPE
 from datetime import datetime
 
-db = mysql.connector.connect(user='taoing', password='fourir96akbar', host='10.151.36.134', database='ta_container')
+db = mysql.connector.connect(user='taoing', password='fourir96akbar', host='192.168.0.15', database='ta_container')
 cursor = db.cursor(buffered=True)
 
 class NiceLogger:
@@ -42,29 +44,38 @@ class DockerHelper:
         self.niceLogger.log(" - Pulled " + containerImage)
 
     def run_container(self, containerName, containerImage, args):
-        command = ["docker", "run", "-dit", "--net", config["NetworkName"], "--name", containerName]
+        command = ["docker", "run", "-dit", "--workdir", "/root", "--net", config["NetworkName"], "--name", containerName]
         command.extend(args)
         command.append(containerImage)
-
-        print "Kelar download bosku"
 
         popen = self.run_command(command)
 
         error = popen.stderr.readline().decode("utf-8")
 
-        print "===="
-        print error
-        print "===="
-
         if error != "":
-            print "Masuk if"
             error = error.replace("\n", "")
             self.niceLogger.log("An error occurred:" + error)
         else:
-            print "Masuk else"
             id = popen.stdout.readline().decode("utf-8")
             id = id.replace("\n", "")
+            command_mkdir = 'docker exec -d -it '+getIP+' sh -c "mkdir .mitmproxy"'
+            os.system(command_mkdir)
+            time.sleep(1)
+
+            command_cp = 'docker cp /home/fourirakbar/.mitmproxy/. '+getIP+':/root/.mitmproxy'
+            command_cp_2 = 'docker cp /home/fourirakbar/container-data/read_file.sh '+getIP+':/root'
+            os.system(command_cp)
+            time.sleep(1)
+            os.system(command_cp_2)
+
+            command_to_exec = 'docker exec -d -it '+getIP+' sh -c "mitmdump --anticache --anticomp -v --mode transparent --showhost --set client_certs=~/.mitmproxy -w output_file -p '+getPORT+'"'
+            print command_to_exec
+            os.system(command_to_exec)
+            time.sleep(1)
             self.niceLogger.log(" - New container ID " + id)
+
+    # def run_exec_only(execCommand):
+    #     command = ["docker", "exec", "-it", containerNames, "-c", "env LA"]
 
     def run_container_with_exec(self, containerName, containerImage, execCommand, args):
         command = ["docker", "run", "-d", "--net", config["NetworkName"], "--name", containerName]
@@ -83,8 +94,8 @@ class DockerHelper:
 
         return popen
 
-
-flag_container=1
+# flag_container=1
+print "jancok matek o cok"
 
 readdata = open("data.txt", "r")
 boi = readdata.read().split("|")
@@ -101,7 +112,7 @@ config = {
 }
 
 containerImages = {
-    "mitmproxy": "fourirakbar/mitmproxy-oing:version2"
+    "mitmproxy": "fourirakbar/mitmproxy-oing:version3"
 }
 
 containerNames = {
@@ -122,5 +133,7 @@ niceLogger.log("Adding SecretProject2.")
 name_dir = '/home/fourirakbar/container-data/'+getIP+'_'+getNRP+'_'+getPORT
 p = subprocess.Popen('mkdir '+name_dir+'', shell=True)
 p.wait()
+q = subprocess.call('cp -r /home/fourirakbar/TA/mitmproxy/.mitmproxy/ '+name_dir+'', shell=True)
+# q.wait()
 
-dockerHelper.run_container(containerNames["mitmproxy"], containerImages['mitmproxy'], ["-v", name_dir+":/root"], ["--privileged"])
+dockerHelper.run_container(containerNames["mitmproxy"], containerImages['mitmproxy'], ["-v", name_dir+":/root", "--privileged"])
