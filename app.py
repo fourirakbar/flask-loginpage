@@ -24,7 +24,7 @@ cursor3 = db.cursor(buffered=True)
 
 @app.route('/', methods=['GET'])
 def hello():
-    return redirect("http://10.151.36.130:4000/login", code=302)
+    return redirect("http://10.151.36.38:4000/login", code=302)
 
 @app.route('/login', methods=['GET'])
 def home():
@@ -101,7 +101,7 @@ def do_admin_login():
             ip_client = POST_USERNAME + "|" + request.remote_addr
             
             print "masuk: "+ip_client      
-            res = requests.post('http://10.151.36.134:5000/tests/endpoint', headers={'content-type': 'application/json'}, json=ip_client)
+            res = requests.post('http://10.151.36.38:5000/tests/endpoint', headers={'content-type': 'application/json'}, json=ip_client)
             
             print "done boi"
 
